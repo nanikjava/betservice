@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/golang/protobuf/ptypes"
 	_ "github.com/mattn/go-sqlite3"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -76,6 +77,17 @@ func (r *racesRepo) applyFilter(query string, filter *racing.ListRacesRequestFil
 
 		for _, meetingID := range filter.MeetingIds {
 			args = append(args, meetingID)
+		}
+	}
+
+	//new WHERE clause to be generated when Visible parameter
+	//is provided
+	if filter.Visible != "" {
+		b, err := strconv.Atoi(filter.Visible)
+
+		if err == nil {
+			clauses = append(clauses, "visible=?")
+			args = append(args, b)
 		}
 	}
 
