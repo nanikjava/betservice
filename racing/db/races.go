@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/golang/protobuf/ptypes"
 	_ "github.com/mattn/go-sqlite3"
 	"strconv"
@@ -19,6 +20,9 @@ type RacesRepo interface {
 
 	// List will return a list of races.
 	List(filter *racing.ListRacesRequest) ([]*racing.Race, error)
+
+	// Get will return single race.
+	Get(filter *racing.GetRaceRequest) (*racing.Race, error)
 }
 
 type racesRepo struct {
@@ -41,6 +45,26 @@ func (r *racesRepo) Init() error {
 	})
 
 	return err
+}
+
+// Get gets a single race record based on the specified filter
+func (r *racesRepo) Get(req *racing.GetRaceRequest) (*racing.Race, error) {
+	var (
+		err   error
+		query string
+		args  []interface{}
+	)
+
+	query = getRaceQueries()[raceGet]
+
+	args = append(args, req.GetRaceId())
+
+	rows, err := r.db.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.scanRace(rows)
 }
 
 func (r *racesRepo) List(req *racing.ListRacesRequest) ([]*racing.Race, error) {
@@ -106,6 +130,33 @@ func (r *racesRepo) applyFilter(query string, filter *racing.ListRacesRequestFil
 	}
 
 	return query, args
+}
+
+// scanRace to scan for a single race
+func (m *racesRepo) scanRace(
+	rows *sql.Rows,
+) (*racing.Race, error) {
+
+	if rows.Next() {
+		race := &racing.Race{}
+		var advertisedStart time.Time
+		if err := rows.Scan(&race.Id, &race.MeetingId, &race.Name, &race.Number, &race.Visible, &advertisedStart, &race.Status); err != nil {
+			if err == sql.ErrNoRows {
+				return nil, nil
+			}
+
+			return nil, err
+		}
+
+		ts, err := ptypes.TimestampProto(advertisedStart)
+		if err != nil {
+			return nil, err
+		}
+
+		race.AdvertisedStartTime = ts
+		return race, nil
+	}
+	return nil, fmt.Errorf("race not found")
 }
 
 func (m *racesRepo) scanRaces(
