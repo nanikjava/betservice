@@ -9,7 +9,7 @@ import "google/api/annotations.proto";
 service Racing {
   // ListRaces returns a list of all races.
   rpc ListRaces(ListRacesRequest) returns (ListRacesResponse) {
-    option (google.api.http) = { post: "/v1/list-races", body: "*" };
+    option (google.api.http) = {post: "/v1/list-races", body: "*"};
   }
 }
 
@@ -28,6 +28,9 @@ message ListRacesResponse {
 // Filter for listing races.
 message ListRacesRequestFilter {
   repeated int64 meeting_ids = 1;
+
+  // visible represents whether or not the race is visible.
+  string visible = 2;
 }
 
 /* Resources */
