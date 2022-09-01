@@ -14,6 +14,9 @@ service Racing {
 
 message ListRacesRequest {
   ListRacesRequestFilter filter = 1;
+
+  // order_by represent the field to use for sorting
+  string order_by = 2;
 }
 
 // Response to ListRaces call.
@@ -24,6 +27,8 @@ message ListRacesResponse {
 // Filter for listing races.
 message ListRacesRequestFilter {
   repeated int64 meeting_ids = 1;
+
+  // visible represents whether or not the race is visible.
   string visible = 2;
 }
 
