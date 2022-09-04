@@ -11,9 +11,24 @@ service Racing {
   rpc ListRaces(ListRacesRequest) returns (ListRacesResponse) {
     option (google.api.http) = {post: "/v1/list-races", body: "*"};
   }
+
+  // GetRace returns a particular race.
+  rpc GetRace(GetRaceRequest) returns (GetRaceResponse) {
+    option (google.api.http) = {get: "/v1/get-race/{race_id}"};
+  }
 }
 
 /* Requests/Responses */
+
+// Request for GetRace call.
+message GetRaceRequest {
+  int64 race_id = 1;
+}
+
+// Response to GetRace call.
+message GetRaceResponse {
+  Race races = 1;
+}
 
 // Request for ListRaces call.
 message ListRacesRequest {
