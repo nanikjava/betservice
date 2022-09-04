@@ -18,6 +18,9 @@ service Racing {
 // Request for ListRaces call.
 message ListRacesRequest {
   ListRacesRequestFilter filter = 1;
+
+  // order_by represent the field to use for sorting
+  string order_by = 2;
 }
 
 // Response to ListRaces call.
