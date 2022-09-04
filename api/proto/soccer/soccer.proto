@@ -1,0 +1,52 @@
+syntax = "proto3";
+package soccer;
+
+option go_package = "/soccer";
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+service Soccer {
+  // ListMatches returns a list of all match.
+  rpc ListMatches(ListMatchesRequest) returns (ListMatchesResponse) {
+    option (google.api.http) = {get: "/v1/list-matches"};
+  }
+}
+
+/* Requests/Responses */
+// Request for ListMatches call.
+message ListMatchesRequest {
+  // order_by represent the field to use for sorting
+  string order_by = 1;
+}
+
+// Response to ListMatches call.
+message ListMatchesResponse {
+  repeated Match matches = 1;
+}
+
+/* Resources */
+
+// A soccer match resource.
+message Match {
+  // ID represents a unique identifier for the race.
+  int64 id = 1;
+
+  // League represents the soccer league of the competition
+  string league = 2;
+
+  // Team_Home represents name of home soccer team
+  string team_home = 3;
+
+  // Team_Home_Manager represents manager's name of home soccer team
+  string team_home_manager = 4;
+
+  // Team_Away represents name of away soccer team
+  string team_away = 5;
+
+  // Team_Away_Manager represents manager's name of away soccer team
+  string team_away_manager = 6;
+
+  // Advertised_Start_Time represents match start time
+  google.protobuf.Timestamp advertised_start_time = 7;
+}
